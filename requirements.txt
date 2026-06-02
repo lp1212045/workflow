@@ -1,0 +1,7 @@
+pandas
+openpyxl
+pytz
+gspread
+google-api-python-client
+google-auth
+openai
