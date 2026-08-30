@@ -21,7 +21,7 @@
 ![WhatsApp Agent 運作展示](assets/whatsapp-agent-demo.gif)
 
 ### 🏗️ 雲端與智能體架構圖 (Architecture)
-![系統一架構圖](assets/architecture-system-zh.png)
+![系統一架構圖](assets/architecture-system1-zh.png)
 
 ### 🧪 核心功能與實戰測試場景 (Verified Test Scenarios)
 
@@ -54,7 +54,7 @@
 ## 📊 系統二：自動化社群輿情與風險帳號畫像分析管線
 
 ### 🏗️ 數據管線架構圖 (Pipeline Architecture)
-![系統二架構圖](assets/pipeline-system-zh.png)
+![系統二架構圖](assets/pipeline-system2-zh.png)
 
 ### 🌟 核心功能亮點
 
