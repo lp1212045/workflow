@@ -2,7 +2,7 @@
 
 > **An enterprise AI operations portfolio** integrating real-time Generative AI assistants with automated data pipelines. Built to eliminate manual daily workflows, unlock conversational data insights, and proactively detect brand sentiment and community risks.
 
-**English** | [繁體中文版](README_zh.md)
+**English** | [繁體中文](README_zh.md)
 
 ---
 
