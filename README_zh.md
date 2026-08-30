@@ -2,7 +2,7 @@
 
 > **雙軌企業級 AI 營運賦能專案**：結合即時生成式 AI 助理與自動化數據管線，旨在消除重複性人工日常作業、實現對話式數據提取，並主動監控社群品牌輿情與帳號風險。
 
-[English Version](README.md) | **繁體中文版**
+[English](README.md) | **繁體中文**
 
 ---
 
@@ -21,53 +21,7 @@
 ![WhatsApp Agent 運作展示](assets/whatsapp-agent-demo.gif)
 
 ### 🏗️ 雲端與智能體架構圖 (Architecture)
-
-```mermaid
-flowchart TD
-    subgraph Client [" 📱 用戶端互動層 (User Interface)"]
-        User["用戶 / WhatsApp 群組成員"]
-        EvoAPI["Evolution API (WhatsApp 網關)"]
-    end
-
-    subgraph GCP [" ☁️ Google Cloud Platform (GCP 核心後端)"]
-        PubSub["Google Cloud Pub/Sub\n(異步事件解耦隊列)"]
-        CloudFunction["Cloud Functions / Cloud Run\n(Python 核心 Agent 服務)"]
-        SecretMgr["Secret Manager\n(安全密鑰管理)"]
-        Firestore["Cloud Firestore\n(用戶多輪對話記憶 & 冪等去重)"]
-    end
-
-    subgraph AI_Engine [" 🧠 智慧大腦與多模態解析"]
-        Gemini["Google Vertex AI / Gemini 3.7 Flash\n(Tool Calling 思考迴圈 & 視覺理解)"]
-        DocParser["MarkItDown & Docx Engine\n(Word/PDF/Excel 提取 & 內嵌截圖解碼)"]
-    end
-
-    subgraph External [" 🔌 數據來源與執行終端 (Integrations)"]
-        Postgres[("PostgreSQL 營運資料庫\n(自然語言 Text-to-SQL 查詢)")]
-        GWorkspace["Google Workspace\n(Drive 搜尋 / Sheets 讀寫)"]
-        GoogleSearch["Google Web Search\n(即時聯網 Grounding)"]
-        EmailSMTP["Gmail SMTP 服務\n(自動發送排版郵件與 CSV 附件)"]
-    end
-
-    %% 流程連線
-    User <-->|傳送文字 / SOP 文件 / 截圖 / 語音| EvoAPI
-    EvoAPI -->|Webhook 事件推送| PubSub
-    PubSub -->|觸發 CloudEvent| CloudFunction
-    
-    CloudFunction <-->|讀寫 Session 歷史紀錄| Firestore
-    CloudFunction -.->|讀取 API 金鑰| SecretMgr
-    
-    CloudFunction <-->|傳送 Prompt / 附件 / 工具回傳| Gemini
-    CloudFunction -->|文件/圖片解析轉譯| DocParser
-    DocParser -->|多模態數據注入| Gemini
-    
-    %% 工具呼叫
-    Gemini -->|1. 動態生成 SQL| Postgres
-    Gemini -->|2. 雲端試算表與硬碟操作| GWorkspace
-    Gemini -->|3. 即時搜尋聯網| GoogleSearch
-    Gemini -->|4. 寄出報表郵件| EmailSMTP
-    
-    CloudFunction -->|回傳報告 / 匯出 CSV 實體檔案| EvoAPI
-```
+![系統一架構圖](assets/architecture-system1-zh.png)
 
 ### 🧪 核心功能與實戰測試場景 (Verified Test Scenarios)
 
@@ -100,32 +54,7 @@ flowchart TD
 ## 📊 系統二：自動化社群輿情與風險帳號畫像分析管線
 
 ### 🏗️ 數據管線架構圖 (Pipeline Architecture)
-
-```mermaid
-flowchart LR
-    subgraph Trigger [" ⏱️ 定時觸發層"]
-        Cron["GitHub Actions\n(CRON Job 每日 09:00 HKT)"]
-    end
-
-    subgraph Pipeline [" ⚙️ 數據清洗與風控分析核心"]
-        DriveIngest["1. Google Drive Ingestion\n(自動拉取昨日對話日誌)"]
-        CleanDedupe["2. 文本清洗與去重\n(動態時間容差 & 關鍵詞匹配)"]
-        SentimentEngine["3. Gemini LLM 情緒引擎\n(正面 / 中立 / 負面客訴分類)"]
-        RiskEngine["4. 30 天跨群軌跡風控模型\n(Real / Watch / Business / Seeder)"]
-    end
-
-    subgraph Output [" 📊 看板與即時預警"]
-        Sheets["Google Sheets 營運看板\n(自動批次覆寫儀表板)"]
-        Alert["🚨 客服/公關緊急郵件通知\n(負面客訴上下文即時告警)"]
-    end
-
-    Cron --> DriveIngest
-    DriveIngest --> CleanDedupe
-    CleanDedupe --> SentimentEngine
-    SentimentEngine --> RiskEngine
-    RiskEngine --> Sheets
-    SentimentEngine -->|偵測到負面關鍵輿情| Alert
-```
+![系統二架構圖](assets/pipeline-system2-zh.png)
 
 ### 🌟 核心功能亮點
 
