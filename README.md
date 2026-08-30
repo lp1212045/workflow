@@ -1,45 +1,162 @@
-> 🌍 **Language:** English | [繁體中文](README_zh-HK.md)
+# 🚀 AI-Driven Business Operations & Marketing Intelligence Suite
 
-<br>
+> **An enterprise AI operations portfolio** integrating real-time Generative AI assistants with automated data pipelines. Built to eliminate manual daily workflows, unlock conversational data insights, and proactively detect brand sentiment and community risks.
 
-# 🚀 Automated Marketing Data Pipeline, LLM Sentiment & Risk Profiling System
+**English** | [繁體中文版](README_zh.md)
 
-## 📌 Overview
-This repository contains a comprehensive automated data processing workflow designed to streamline marketing operations, customer sentiment analysis, and user risk profiling. By integrating Python, Large Language Models (Gemini via Poe API), Google Workspace APIs, and AI Agents (Manus AI), this system transforms unstructured daily WhatsApp conversational data into structured, actionable business intelligence across four core modules.
+---
 
-## 💼 Business Impact
-* **Efficiency Leap:** Automated data cleaning, API requests, and dashboard updates reduce daily operational processing time from 2-3 hours to just **15 minutes** (over 80% time saved).
-* **Proactive Crisis Management:** Leverages LLM to perform advanced sentiment analysis, categorizing feedback (Negative/Positive/Neutral) to instantly flag PR risks for immediate customer service intervention.
-* **Automated Risk Profiling:** Analyzes 30-day historical user behavior to automatically identify, score, and flag suspicious accounts (e.g., spam, competitor "seeders", unauthorized business promotions).
-* **Zero-Touch Executive Reporting:** Implemented an autonomous AI agent (Manus AI) to validate daily data freshness and push tailored email summaries to stakeholders, ensuring immediate visibility of PR crises without requiring manual dashboard check-ins.
+## 📌 Executive Summary
 
-## 🛠️ Tech Stack
-* **Language:** Python 3.11 (`pandas`, `regex`, `datetime`)
-* **AI & NLP:** Gemini-2.5-Flash (via Poe API), Prompt Engineering
-* **Cloud & Integration:** Google Drive API (File fetching), Google Sheets API / `gspread` (Config reading & Data export), Manus AI Agent, Gmail API Connector
-* **Performance & Reliability:** `concurrent.futures` (Multi-threading), Custom Exponential Backoff Decorators (API rate-limit handling)
-* **CI/CD & Automation:** GitHub Actions (CRON Jobs, Dependency Caching, `workflow_dispatch` manual triggers)
+This repository demonstrates the end-to-end implementation of **Generative AI (Gemini 3.7 Flash)** and **Google Cloud Platform (GCP)** architecture in real-world business operations. The solution consists of two complementary systems:
 
-## ⚙️ Core Architecture & Modules
+1. **🤖 Multi-Modal WhatsApp AI Operations Assistant (Real-Time)**: An on-demand conversational agent deployed on GCP. Non-technical staff can query databases via natural language, extract data from documents/images, and dispatch CSV/email reports directly within WhatsApp.
+2. **📊 Marketing Intelligence & Risk Profiling Pipeline (Automated Batch)**: An autonomous data pipeline running scheduled jobs to clean chat logs, profile community users, analyze brand sentiment, and trigger instant crisis alerts for customer service teams.
 
-### 1. `main.py` (Data Pipeline & LLM Engine)
-* **Data Ingestion:** Authenticates via a modularized Google Service Account to dynamically search and download daily raw chat logs (`.csv`/`.xlsx`) from Google Drive.
-* **Filtering & Deduplication:** Reads dynamic configuration from a master Google Sheet, performing strict text deduplication and keyword matching based on time tolerances and user identity scores.
-* **LLM Processing:** Sends filtered data to the LLM to classify user intent (Spam detection) and perform granular brand sentiment analysis.
+---
 
-### 2. `risk_analysis.py` (User Behavior & Risk Engine)
-* **Behavioral Aggregation:** Backtracks 30 days of conversational data to construct behavioral profiles for active users (e.g., group join counts, brand mention frequency).
-* **Rule-Based Scoring:** Applies a proprietary scoring algorithm to evaluate user risk and updates the "Sim Master" database, tagging users as `Real`, `Watch`, `Business`, or `IFT Seeder`.
+## 🤖 System 1: Multi-Modal WhatsApp AI Operations Assistant
 
-### 3. `dashboard.py` (Dashboard Automation)
-* **Data Synthesis:** Aggregates daily group activities, categorizes discussion topics, and calculates brand sentiment ratios.
-* **Batch Updates:** Uses the `sheets_service.spreadsheets().batchUpdate()` API to efficiently overwrite specific dashboard cells, keeping management charts up-to-date without human intervention.
+### 🎥 Live Demo
+<!-- Place your GIF file in the assets/ directory -->
+![WhatsApp Agent Demo](assets/whatsapp-agent-demo.gif)
 
-### 4. Email Automation & Crisis Alerting Engine (via Manus AI)
-* **Autonomous Execution:** A fully automated CRON job triggers daily at 09:00 HKT using Manus AI to orchestrate data extraction from Google Sheets.
-* **Smart Data Validation:** Incorporates a fail-safe pause mechanism; it cross-references the dashboard's latest recorded date with the current date, halting execution and notifying admins if the pipeline data is delayed.
-* **Targeted Alerting:** Scans the daily data for negative brand sentiment ("N") specifically for core brands. It extracts crucial context (Group, Time, User Phone, Quoted Messages) and synthesizes an urgent alert section in the email payload for the Customer Service team.
+### 🏗️ Cloud & Agent Architecture
 
-## 🔒 Security & Reliability Note
-* **Data Privacy:** For security and compliance reasons, all sensitive configurations (Google Service Account credentials, API keys, Folder IDs) are strictly managed via Environment Variables and GitHub Secrets. No real customer data is exposed in this public repository.
-* **Fault Tolerance:** All Google API calls are wrapped in a custom `@with_retry` decorator implementing **Exponential Backoff**, ensuring the pipeline remains robust against API quota limits and `429 Too Many Requests` errors.
+```mermaid
+flowchart TD
+    subgraph Client [" 📱 User Interaction Layer"]
+        User["User / WhatsApp Group"]
+        EvoAPI["Evolution API (WhatsApp Gateway)"]
+    end
+
+    subgraph GCP [" ☁️ Google Cloud Platform (Backend Architecture)"]
+        PubSub["Google Cloud Pub/Sub\n(Asynchronous Event Decoupling)"]
+        CloudFunction["Cloud Functions / Cloud Run\n(Python Agent Core Service)"]
+        SecretMgr["Secret Manager\n(Secure Credential Storage)"]
+        Firestore["Cloud Firestore\n(Multi-Turn Session Memory & Deduplication)"]
+    end
+
+    subgraph AI_Engine [" 🧠 AI & Multi-Modal Engine"]
+        Gemini["Google Vertex AI / Gemini 3.7 Flash\n(Tool Calling Loop & Vision Understanding)"]
+        DocParser["MarkItDown & Docx Engine\n(Document Text & Embedded Image Extraction)"]
+    end
+
+    subgraph External [" 🔌 Data Sources & External Actions"]
+        Postgres[("PostgreSQL Database\n(Natural Language Text-to-SQL)")]
+        GWorkspace["Google Workspace\n(Drive Search / Sheets Read & Write)"]
+        GoogleSearch["Google Web Search\n(Real-Time Web Grounding)"]
+        EmailSMTP["Gmail SMTP Service\n(HTML Reports with CSV Attachments)"]
+    end
+
+    %% Flow Connections
+    User <-->|Text / Image / Document / Command| EvoAPI
+    EvoAPI -->|Webhook Event| PubSub
+    PubSub -->|Trigger CloudEvent| CloudFunction
+    
+    CloudFunction <-->|Read / Write Session History| Firestore
+    CloudFunction -.->|Retrieve Secrets| SecretMgr
+    
+    CloudFunction <-->|Prompts & Tool Execution Loop| Gemini
+    CloudFunction -->|Parse Attachments| DocParser
+    DocParser -->|Multi-Modal Ingestion| Gemini
+    
+    %% Tool Invocations
+    Gemini -->|1. Dynamic Text-to-SQL| Postgres
+    Gemini -->|2. Workspace File Ops| GWorkspace
+    Gemini -->|3. Live Web Grounding| GoogleSearch
+    Gemini -->|4. Automated Email Delivery| EmailSMTP
+    
+    CloudFunction -->|Return Reply / Send CSV Attachment| EvoAPI
+```
+
+### 🧪 Verified Capabilities & Test Scenarios
+
+The system has undergone end-to-end verification across operational workflows:
+
+* **Test 1: Multi-Turn Memory & Session Reset (`/reset`)**
+  * **Workflow:** Verified contextual memory across conversations stored in Cloud Firestore.
+  * **Result:** Agent recalls contextual user attributes (e.g., user identity) and cleanly wipes history upon issuing `/reset`.
+* **Test 2: Natural Language Database Querying (Text-to-SQL)**
+  * **Workflow:** Inspects database schemas dynamically and executes safe read-only `SELECT` queries with connection pooling (SQLAlchemy).
+  * **Result:** Automatically queries message counts and timestamps, displaying real-time UI feedback (`🔍 Executing SQL...`) before outputting structured insights.
+* **Test 3: Big Data Analysis & Physical File Delivery**
+  * **Workflow:** Extracts datasets into temporary storage, performs LLM sentiment/categorization analysis, and compiles downloadable reports.
+  * **Result:** Delivers real-time progress indicators (`🧠 Analyzing data... ➔ 📊 Packaging report...`) and pushes the physical `.csv` file directly into the WhatsApp chat window.
+* **Test 4: Multi-Modal & Document Understanding (Images & Files)**
+  * **Workflow:** Evaluates image OCR and multi-format document parsing (`.docx`, `.xlsx`, `.pdf`, `.pptx`).
+  * **Result:** Successfully extracts text and embedded flowcharts/screenshots inside documents, combining visual and textual reasoning into concise summaries.
+* **Test 5: Automated Email Reporting with Attachments**
+  * **Workflow:** Connects with Gmail SMTP to compile formatted HTML reports with data attachments.
+  * **Result:** Pushes formatted executive summaries with generated `.csv` files directly to designated stakeholder inboxes.
+* **Test 6: Real-Time Web Grounding Search**
+  * **Workflow:** Dispatches queries requiring external real-time data (e.g., live exchange rates, financial news) using a dedicated Google Grounding client.
+  * **Result:** Accurately summarizes live web data without conflicting with internal tool schemas.
+* **Test 7: Group Mention Filtering & Idempotency (Production Guardrail)**
+  * **Workflow:** Filters non-relevant group messages and avoids duplicate executions from Pub/Sub retries.
+  * **Result:** Agent remains silent unless explicitly `@mentioned` in groups; Firestore-backed deduplication ignores duplicate message IDs.
+
+---
+
+## 📊 System 2: Automated Sentiment & Community Risk Profiling Pipeline
+
+### 🏗️ Pipeline Architecture
+
+```mermaid
+flowchart LR
+    subgraph Trigger [" ⏱️ Scheduling"]
+        Cron["GitHub Actions\n(CRON Job Daily 09:00 HKT)"]
+    end
+
+    subgraph Pipeline [" ⚙️ Processing & Risk Scoring Core"]
+        DriveIngest["1. Google Drive Ingestion\n(Daily raw chat logs)"]
+        CleanDedupe["2. Cleaning & Deduplication\n(Time tolerances & text normalization)"]
+        SentimentEngine["3. Gemini LLM Sentiment Engine\n(Positive / Neutral / Negative classification)"]
+        RiskEngine["4. 30-Day Behavioral Risk Engine\n(Real / Watch / Business / Seeder scoring)"]
+    end
+
+    subgraph Output [" 📊 Dashboard & Alerting"]
+        Sheets["Google Sheets Dashboard\n(Batch cell overwriting)"]
+        Alert["🚨 CS/PR Urgent Alert\n(Contextual incident payload via Email)"]
+    end
+
+    Cron --> DriveIngest
+    DriveIngest --> CleanDedupe
+    CleanDedupe --> SentimentEngine
+    SentimentEngine --> RiskEngine
+    RiskEngine --> Sheets
+    SentimentEngine -->|Flagged Negative Incident| Alert
+```
+
+### 🌟 Key Functional Capabilities
+
+* **🧠 Granular Sentiment & Crisis Alerting:** Scans daily brand discussions and flags urgent negative feedback (attaching chat group, sender phone, timestamp, and quoted messages) to customer service teams.
+* **🛡️ 30-Day Historical Risk Profiling:** Tracks cross-group engagement history over 30 days to tag accounts into *Real User*, *Watchlist*, *Commercial Spammer*, or *Competitor Seeder*.
+* **📈 Zero-Touch Executive Dashboards:** Automatically aggregates volume, sentiment distribution, and topic trends, updating management dashboards with zero manual intervention.
+
+---
+
+## 💼 Business Impact & Efficiency Gains
+
+| Metric / Dimension | Traditional Manual Workflow | AI-Automated Solution | Impact & Value Added |
+| :--- | :--- | :--- | :--- |
+| **Daily Data Processing** | 2 – 3 Hours / day | ~15 Minutes / day | **>80% Operational Time Saved** |
+| **Data Querying Barrier** | Relies on data/IT team requests | Instant via WhatsApp conversation | **Zero learning curve** for non-technical teams |
+| **Crisis Detection** | Discovered passively after complaints | Automated daily morning email alerts | Enables **proactive PR & CS intervention** |
+| **Community Quality** | Manual review of spam accounts | Automated 30-day behavior profiling | Protects organic community trust |
+
+---
+
+## 🛠️ Technology Stack
+
+* **AI & Multi-Modal Frameworks:** Google Vertex AI (Gemini Flash), MarkItDown, Python-docx, Prompt Engineering
+* **Cloud & Serverless:** Google Cloud Platform (Cloud Functions, Cloud Run, Cloud Pub/Sub, Cloud Secret Manager, Cloud Firestore)
+* **Data & Storage:** PostgreSQL, SQLAlchemy (Connection Pooling), Pandas
+* **Automation & Gateways:** Evolution API (WhatsApp Gateway), Google Workspace APIs (Sheets & Drive), Gmail SMTP, GitHub Actions
+
+---
+
+## 🔒 Security & Privacy Notice
+
+* **Encrypted Secrets:** All credentials, database URIs, and API tokens are managed via GCP Secret Manager and GitHub Secrets.
+* **De-Identified Data:** All demonstration logs, database schemas, and media samples are sanitized for public presentation.
