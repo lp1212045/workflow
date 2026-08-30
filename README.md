@@ -22,53 +22,7 @@ This repository demonstrates the end-to-end implementation of **Generative AI (G
 ![WhatsApp Agent Demo](assets/whatsapp-agent-demo.gif)
 
 ### 🏗️ Cloud & Agent Architecture
-
-```mermaid
-flowchart TD
-    subgraph Client [" 📱 User Interaction Layer"]
-        User["User / WhatsApp Group"]
-        EvoAPI["Evolution API (WhatsApp Gateway)"]
-    end
-
-    subgraph GCP [" ☁️ Google Cloud Platform (Backend Architecture)"]
-        PubSub["Google Cloud Pub/Sub\n(Asynchronous Event Decoupling)"]
-        CloudFunction["Cloud Functions / Cloud Run\n(Python Agent Core Service)"]
-        SecretMgr["Secret Manager\n(Secure Credential Storage)"]
-        Firestore["Cloud Firestore\n(Multi-Turn Session Memory & Deduplication)"]
-    end
-
-    subgraph AI_Engine [" 🧠 AI & Multi-Modal Engine"]
-        Gemini["Google Vertex AI / Gemini 3.7 Flash\n(Tool Calling Loop & Vision Understanding)"]
-        DocParser["MarkItDown & Docx Engine\n(Document Text & Embedded Image Extraction)"]
-    end
-
-    subgraph External [" 🔌 Data Sources & External Actions"]
-        Postgres[("PostgreSQL Database\n(Natural Language Text-to-SQL)")]
-        GWorkspace["Google Workspace\n(Drive Search / Sheets Read & Write)"]
-        GoogleSearch["Google Web Search\n(Real-Time Web Grounding)"]
-        EmailSMTP["Gmail SMTP Service\n(HTML Reports with CSV Attachments)"]
-    end
-
-    %% Flow Connections
-    User <-->|Text / Image / Document / Command| EvoAPI
-    EvoAPI -->|Webhook Event| PubSub
-    PubSub -->|Trigger CloudEvent| CloudFunction
-    
-    CloudFunction <-->|Read / Write Session History| Firestore
-    CloudFunction -.->|Retrieve Secrets| SecretMgr
-    
-    CloudFunction <-->|Prompts & Tool Execution Loop| Gemini
-    CloudFunction -->|Parse Attachments| DocParser
-    DocParser -->|Multi-Modal Ingestion| Gemini
-    
-    %% Tool Invocations
-    Gemini -->|1. Dynamic Text-to-SQL| Postgres
-    Gemini -->|2. Workspace File Ops| GWorkspace
-    Gemini -->|3. Live Web Grounding| GoogleSearch
-    Gemini -->|4. Automated Email Delivery| EmailSMTP
-    
-    CloudFunction -->|Return Reply / Send CSV Attachment| EvoAPI
-```
+![Cloud & Agent Architecture](assets/architecture-system1.png)
 
 ### 🧪 Verified Capabilities & Test Scenarios
 
@@ -101,32 +55,7 @@ The system has undergone end-to-end verification across operational workflows:
 ## 📊 System 2: Automated Sentiment & Community Risk Profiling Pipeline
 
 ### 🏗️ Pipeline Architecture
-
-```mermaid
-flowchart LR
-    subgraph Trigger [" ⏱️ Scheduling"]
-        Cron["GitHub Actions\n(CRON Job Daily 09:00 HKT)"]
-    end
-
-    subgraph Pipeline [" ⚙️ Processing & Risk Scoring Core"]
-        DriveIngest["1. Google Drive Ingestion\n(Daily raw chat logs)"]
-        CleanDedupe["2. Cleaning & Deduplication\n(Time tolerances & text normalization)"]
-        SentimentEngine["3. Gemini LLM Sentiment Engine\n(Positive / Neutral / Negative classification)"]
-        RiskEngine["4. 30-Day Behavioral Risk Engine\n(Real / Watch / Business / Seeder scoring)"]
-    end
-
-    subgraph Output [" 📊 Dashboard & Alerting"]
-        Sheets["Google Sheets Dashboard\n(Batch cell overwriting)"]
-        Alert["🚨 CS/PR Urgent Alert\n(Contextual incident payload via Email)"]
-    end
-
-    Cron --> DriveIngest
-    DriveIngest --> CleanDedupe
-    CleanDedupe --> SentimentEngine
-    SentimentEngine --> RiskEngine
-    RiskEngine --> Sheets
-    SentimentEngine -->|Flagged Negative Incident| Alert
-```
+![Pipeline Architecture](assets/pipeline-system2.png)
 
 ### 🌟 Key Functional Capabilities
 
