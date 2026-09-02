@@ -16,11 +16,6 @@ This repository demonstrates the end-to-end implementation of **Generative AI (G
 ---
 
 ## 🤖 System 1: Multi-Modal WhatsApp AI Operations Assistant
-
-### 🎥 Live Demo
-<!-- Place your GIF file in the assets/ directory -->
-![WhatsApp Agent Demo](assets/whatsapp-agent-demo.gif)
-
 ### 🏗️ Cloud & Agent Architecture
 ![Cloud & Agent Architecture](assets/architecture-system1.png)
 
