@@ -16,10 +16,6 @@
 ---
 
 ## 🤖 系統一：WhatsApp 多模態 AI 營運小幫手
-
-### 🎥 實際運作展示 (Live Demo)
-![WhatsApp Agent 運作展示](assets/whatsapp-agent-demo.gif)
-
 ### 🏗️ 雲端與智能體架構圖 (Architecture)
 ![系統一架構圖](assets/architecture-system1-zh.png)
 
